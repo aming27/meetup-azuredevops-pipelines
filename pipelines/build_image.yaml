@@ -3,10 +3,10 @@ name: $(Year:yy).$(DayOfYear).$(Rev:r)
 parameters:
 - name: acr_name 
   type: string 
-  default: meetuppipelines
+  default: "your_acr"
 - name: image_name 
   type: string 
-  default: meetup-pipelines
+  default: "your_image"
 - name: image_tag 
   type: string 
   default: $(Build.BuildNumber)

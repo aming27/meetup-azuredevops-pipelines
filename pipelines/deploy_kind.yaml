@@ -27,7 +27,7 @@ stages:
     jobs:
       - job: Install_Kind_and_deploy_app_
         pool:
-          name: "omnichannel"
+          name: "your_pool_name"
         strategy:
           maxParallel: "1"
           matrix:
