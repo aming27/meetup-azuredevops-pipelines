@@ -465,11 +465,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/private/tmp/Examples.AzureDevops.Pipelines.Meetup/AzurePipelines/AzurePipelines.csproj",
+      "projectUniqueName": "/private/tmp/meetup-azuredevops-pipelines/AzurePipelines/AzurePipelines.csproj",
       "projectName": "AzurePipelines",
-      "projectPath": "/private/tmp/Examples.AzureDevops.Pipelines.Meetup/AzurePipelines/AzurePipelines.csproj",
+      "projectPath": "/private/tmp/meetup-azuredevops-pipelines/AzurePipelines/AzurePipelines.csproj",
       "packagesPath": "/Users/alfonso.ming/.nuget/packages/",
-      "outputPath": "/private/tmp/Examples.AzureDevops.Pipelines.Meetup/AzurePipelines/obj/",
+      "outputPath": "/private/tmp/meetup-azuredevops-pipelines/AzurePipelines/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/alfonso.ming/.nuget/NuGet/NuGet.Config"

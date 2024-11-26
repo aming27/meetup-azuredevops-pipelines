@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AzurePipelines")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ab336cbb0216de8355d7b1ebcce959df298f3a98")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c00e1036da961d16943fe234f2899b2a014c8b82")]
 [assembly: System.Reflection.AssemblyProductAttribute("AzurePipelines")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AzurePipelines")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

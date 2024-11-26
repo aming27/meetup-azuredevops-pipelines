@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Maas19+VAbY=",
+  "dgSpecHash": "oCHgRaikH4o=",
   "success": true,
-  "projectFilePath": "/private/tmp/Examples.AzureDevops.Pipelines.Meetup/AzurePipelines/AzurePipelines.csproj",
+  "projectFilePath": "/private/tmp/meetup-azuredevops-pipelines/AzurePipelines/AzurePipelines.csproj",
   "expectedPackageFiles": [
     "/Users/alfonso.ming/.nuget/packages/microsoft.aspnetcore.openapi/7.0.5/microsoft.aspnetcore.openapi.7.0.5.nupkg.sha512",
     "/Users/alfonso.ming/.nuget/packages/microsoft.extensions.apidescription.server/6.0.5/microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
