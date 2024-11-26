@@ -1,7 +1,7 @@
 version: '3.5'
 services:
   tests:
-    image: meetuppipelines.azurecr.io/meetup-pipelines-tests:${docker_tag}
+    image: your_acr.azurecr.io/meetup-pipelines-tests:${docker_tag}
     networks:
       - stage_network
     environment:
