@@ -1,0 +1,34 @@
+## Ex 02: Jobs with parameters
+
+parameters:
+- name: dotnet_version 
+  type: string 
+  default : 7.x 
+  values: 
+  - 6.x 
+  - 7.x
+- name: docker_version
+  type: string 
+  default: 17.09.0-ce
+  
+stages:
+  - stage: dotnet
+    jobs:
+    - job:
+      displayName: install dotnet  
+      steps:
+      - task: UseDotNet@2
+        inputs:
+          version: ${{ parameters.dotnet_version }}
+  
+  - stage: docker
+    jobs:
+    - job:
+      displayName: Install docker 
+      steps: 
+      - task: DockerInstaller@0
+        inputs:
+          dockerVersion: ${{ parameters.docker_version }}
+      - script: |
+          docker version 
+        displayName: Show docker version

@@ -1,0 +1,25 @@
+## Ex 03: Jobs with variables
+variables:
+  - group: meetup-azure-pipelines
+  
+stages:
+  - stage: dotnet
+    jobs:
+    - job:
+      displayName: install dotnet  
+      steps:
+      - task: UseDotNet@2
+        inputs:
+          version: $(DOTNET_VERSION)
+  
+  - stage: docker
+    jobs:
+    - job:
+      displayName: Install docker 
+      steps: 
+      - task: DockerInstaller@0
+        inputs:
+          dockerVersion: $(DOCKER_VERSION)
+      - script: |
+          docker version 
+        displayName: Show docker version

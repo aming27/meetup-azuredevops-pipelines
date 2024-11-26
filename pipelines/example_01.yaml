@@ -1,0 +1,30 @@
+## Ex 01: Show stages and simple jobs
+
+
+stages:
+  - stage: dotnet
+    jobs:
+    - job:
+      displayName: install dotnet  
+      steps:
+      - task: UseDotNet@2
+        inputs:
+          version: 7.x
+  
+  - stage: docker
+    jobs:
+    - job:
+      displayName: Install docker 
+      steps: 
+      - task: DockerInstaller@0
+        inputs:
+          dockerVersion: '17.09.0-ce'
+      - script: |
+          docker version 
+        displayName: Show docker version
+
+        
+   
+
+
+      

@@ -1,0 +1,34 @@
+#Define parameters
+parameters:
+- name: project_csproj 
+  type: string 
+  default : ./AzurePipelines/AzurePipelines.csproj
+- name: dotnet_version 
+  type: string 
+  default: '7.x'
+  values:
+  - 6.x 
+  - 7.x 
+
+
+jobs:
+- job:
+  displayName: Build App 
+  steps:
+  - task: UseDotNet@2
+    inputs:
+      version: ${{ parameters.dotnet_version }} 
+  - script: |
+      dotnet restore ${{ parameters.project_csproj }}
+    displayName: Dotnet Restore
+  - script: |
+      dotnet publish ${{ parameters.project_csproj }} --no-restore --output app --configuration "Release"
+    displayName: Dotnet Publish
+  - script: |
+      cd app &&  zip -r app.zip .
+    displayName: Zip Files
+  - task: PublishBuildArtifacts@1
+    displayName: 'publish artifacts'
+    inputs:
+      PathtoPublish: 'app/app.zip'
+      artifactName: app

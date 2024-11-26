@@ -1,0 +1,26 @@
+## Ex 03: Jobs with variables
+variables:
+  DOTNET_VERSION: '7.x'
+  DOCKER_VERSION: '17.09.0-ce'
+  
+stages:
+  - stage: dotnet
+    jobs:
+    - job:
+      displayName: install dotnet  
+      steps:
+      - task: UseDotNet@2
+        inputs:
+          version: $(DOTNET_VERSION)
+  
+  - stage: docker
+    jobs:
+    - job:
+      displayName: Install docker 
+      steps: 
+      - task: DockerInstaller@0
+        inputs:
+          dockerVersion: $(DOCKER_VERSION)
+      - script: |
+          docker version 
+        displayName: Show docker version

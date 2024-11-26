@@ -1,0 +1,19 @@
+## Demo02: Jobs with Template 
+name: $(Year:yy).$(DayOfYear).$(Rev:r)
+
+stages:
+  - stage: build_app
+    jobs:
+    - template: ./templates/build_app.yaml
+      parameters:
+        project_csproj: ./AzurePipelines/AzurePipelines.csproj
+        dotnet_version: '7.x'
+  
+  - stage: deploy_app 
+    dependsOn: build_app
+    jobs: 
+    - template: ./templates/deploy_app.yaml 
+      parameters: 
+        resource_group: 'meetup-pipelines-rg-stg-we-001'
+        name_webapp: 'meetup-pipelines-webapp-we-001'
+        

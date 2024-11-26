@@ -1,0 +1,74 @@
+#Define parameters
+parameters:
+- name: project_csproj 
+  type: string 
+  default : ./AzurePipelines/AzurePipelines.csproj
+- name: dotnet_version 
+  type: string 
+  default: '7.x'
+  values:
+  - 6.x 
+  - 7.x 
+- name: resource_group 
+  type: string 
+  default: 'meetup-pipelines-rg-stg-we-001'
+
+- name: name_webapp 
+  type: string 
+  default: 'meetup-pipelines-webapp-we-001'
+
+- name: environmentConfigs
+  type: object
+  default:
+    - environment: stg 
+      availableRegions: ["we"]
+    - environment: uat
+      availableRegions: ["we", "ne"]
+stages:
+  - stage: build_app
+    jobs:
+    - job:
+      displayName: Build App 
+      steps:
+      - task: UseDotNet@2
+        inputs:
+          version: ${{ parameters.dotnet_version }} 
+      - script: |
+          dotnet restore ${{ parameters.project_csproj }}
+        displayName: Dotnet Restore
+      - script: |
+          dotnet publish ${{ parameters.project_csproj }} --no-restore --output app --configuration "Release"
+        displayName: Dotnet Publish
+      - script: |
+          cd app &&  zip -r app.zip .
+        displayName: Zip Files
+      - task: PublishBuildArtifacts@1
+        displayName: 'publish artifacts'
+        inputs:
+          PathtoPublish: 'app/app.zip'
+          artifactName: app
+     
+  - ${{ each env in parameters.environmentConfigs }}:
+    - stage: deploy_app_${{ env.environment }}
+      dependsOn: build_app 
+      jobs: 
+      - job:
+        displayName: deploy_app 
+        variables:
+        - group: environment-settings-meetup-stg
+        steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: Download artifats from build
+          inputs:
+            buildType: 'current'
+            artifactName: 'app'
+            targetPath: '$(Build.ArtifactStagingDirectory)'
+        - script: |
+            az login --service-principal -u $(client_id) -p=$(client_secret) --tenant $(tenant_id)
+            az account set --subscription $(subscription_id)
+          displayName: az login
+        - script: | 
+            az webapp deployment source config-zip -g ${{ parameters.resource_group }} -n ${{ parameters.name_webapp}} --src app.zip
+          displayName: deploy app 
+          workingDirectory: $(Build.ArtifactStagingDirectory)
+

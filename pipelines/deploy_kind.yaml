@@ -1,0 +1,71 @@
+trigger: none
+pr: none
+
+parameters:
+- name: acr_name 
+  type: string 
+  default: meetuppipelines
+- name: image_name 
+  type: string 
+  default: meetup-pipelines
+- name: docker_version
+  type: string
+  default: "20.10.12"
+
+variables:
+  - group: environment-settings-meetup-stg
+
+resources:
+  pipelines:
+  - pipeline: deployapp
+    source: Build_image.AzureDevops.Pipelines.Meetup    # Name of the pipeline that builds the image
+    trigger: true
+
+stages:
+  - stage: kind
+    displayName: Install Kind and deploy image
+    jobs:
+      - job: Install_Kind_and_deploy_app_
+        pool:
+          name: "omnichannel"
+        strategy:
+          maxParallel: "1"
+          matrix:
+            K8s127:
+              nodeTag: "kindest/node:v1.27.3"
+        steps:
+          - script: |
+              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.17.0/kind-linux-amd64
+              chmod +x ./kind
+              mv ./kind /usr/local/bin/kind
+              kind create cluster --image $(nodeTag)
+            displayName: Install Kind
+          - script: |
+              kubectl version
+            displayName: Show versions
+          - task: DockerInstaller@0
+            displayName: Docker Installer
+            inputs:
+              dockerVersion: ${{ parameters.docker_version }}
+              releaseType: stable
+          - script: |      
+              docker login ${{ parameters.acr_name }}.azurecr.io -u $(client_id) -p $(client_secret)
+            displayName: Docker Login 
+          - script: |      
+              docker pull ${{ parameters.acr_name }}.azurecr.io/${{ parameters.image_name }}:$(resources.pipeline.deployapp.runName)
+            displayName: Docker Pull Image
+          - script: |
+              docker tag ${{ parameters.acr_name }}.azurecr.io/${{ parameters.image_name }}:$(resources.pipeline.deployapp.runName) ${{ parameters.image_name }}:$(resources.pipeline.deployapp.runName)
+            displayName: Dockert Tag Image 
+          - script: |
+              kind load docker-image ${{ parameters.image_name }}:$(resources.pipeline.deployapp.runName)
+            displayName: Load image into kind cluster
+          - script: |
+             kubectl cluster-info --context kind-kind && kubectl run  ${{ parameters.image_name }} --image=${{ parameters.image_name }}:$(resources.pipeline.deployapp.runName) --port=8080 --namespace=default
+            displayName: kubectl run ${{ parameters.image_name }}
+          - script: |
+              sleep 15
+            displayName: Slepp 15 seconds
+          - script: |
+              kubectl describe pods ${{ parameters.image_name }} --namespace=default
+            displayName: kubectl describe ${{ parameters.image_name }}

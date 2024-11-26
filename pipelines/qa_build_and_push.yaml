@@ -1,0 +1,83 @@
+name: $(Year:yy).$(DayOfYear).$(Rev:r)
+
+parameters:
+- name: acr_name 
+  type: string 
+  default: meetuppipelines
+- name: image_name 
+  type: string 
+  default: meetup-pipelines-tests
+- name: image_tag 
+  type: string 
+  default: latest
+- name: docker_version
+  type: string
+  default: "20.10.12"
+- name: dockerfile_path
+  type: string
+  default: "./tests/Dockerfile"
+- name: docker_tag   
+  type: string 
+  default: latest
+- name: docker_compose_file
+  type: string
+  default: 'docker/docker-compose_tests.yml'
+
+
+trigger:
+  - main
+pr:
+  - main
+
+variables:
+  - group: environment-settings-meetup-stg
+
+
+stages:
+  - stage: Run_Tests
+    jobs: 
+    - job: 
+      pool: your_pool_name
+      displayName: Run Tests
+      steps:
+      - task: DockerInstaller@0
+        displayName: Docker Installer
+        inputs:
+          dockerVersion: ${{ parameters.docker_version }}
+          releaseType: stable
+      - script: |      
+          docker login ${{ parameters.acr_name }}.azurecr.io -u $(client_id) -p $(client_secret)
+        displayName: Login ACR
+      - script: | 
+          docker build -f ${{ parameters.dockerfile_path }}  -t ${{ parameters.acr_name }}.azurecr.io/${{ parameters.image_name }}:${{ parameters.image_tag }}  .
+        displayName: Docker build
+      - script: mkdir -p reports
+      - script: |
+          echo docker_tag=${{ parameters.image_tag }} >> .env
+          echo build_id=$(Build.BuildNumber) >> .env
+        displayName: Adding environment variables to file
+      - script: cat .env
+        displayName: Cat file
+      - script: |
+          docker compose --ansi=always --env-file .env -f ${{ parameters.docker_compose_file }} up
+        displayName: Run Tests
+      - script: |
+          docker compose --ansi=always --env-file .env -f ${{ parameters.docker_compose_file }} cp tests:/docker-test/reports/ $(Build.ArtifactStagingDirectory)
+        displayName: copy output
+      - task: PublishBuildArtifacts@1
+        displayName: 'publish artifacts'
+        inputs:
+          pathToPublish: '$(Build.ArtifactStagingDirectory)'
+          artifactName: reports
+      - task: DownloadPipelineArtifact@2
+        inputs:
+          patterns: '**/TESTS-*.xml'
+          path: $(System.DefaultWorkingDirectory)
+      - task: PublishTestResults@2
+        displayName: 'Check and PublishTestResults'
+        condition: succeededOrFailed()
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: 'TESTS-*.xml'
+          searchFolder: '$(System.DefaultWorkingDirectory)/reports/'
+          failTaskOnFailedTests: true

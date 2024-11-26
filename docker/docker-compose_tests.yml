@@ -1,0 +1,16 @@
+version: '3.5'
+services:
+  tests:
+    image: meetuppipelines.azurecr.io/meetup-pipelines-tests:${docker_tag}
+    networks:
+      - stage_network
+    environment:
+      build_id: ${build_id}
+    command: >
+      sh -c "behave -v tests/features --junit"
+    volumes:
+      - ./../../reports:/docker-test/reports
+
+networks:
+  stage_network:
+    name: ${build_id}_network_be_auto_tests
