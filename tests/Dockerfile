@@ -1,5 +1,5 @@
 FROM python:3.11.7-slim
-LABEL maintainer='meritxell.rodriguez@scrm.lidl'
+
 
 # Install required packages
 WORKDIR /docker-test
